@@ -12,10 +12,18 @@ class Config:
     
     # Database config: defaults to local SQLite for frictionless local dev,
     # overrides with PostgreSQL DATABASE_URL in cloud/production.
+    
     db_url = os.environ.get("DATABASE_URL")
+
     if db_url and db_url.startswith("postgres://"):
-        # Fix legacy Heroku/Render dialect scheme
-        db_url = db_url.replace("postgres://", "postgresql://", 1)
+      db_url = db_url.replace(
+        "postgres://", "postgresql+psycopg2://", 1
+    )
+    elif db_url and db_url.startswith("postgresql://"):
+      db_url = db_url.replace(
+        "postgresql://", "postgresql+psycopg2://", 1
+    )
+
     SQLALCHEMY_DATABASE_URI = db_url or f"sqlite:///{BASE_DIR / 'skillswap.db'}"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
